@@ -452,7 +452,7 @@
     top: 0;
     width: 100%;
     height: 36px;
-    background: rgba(246, 143, 30, 0.06);
+    background: linear-gradient(rgba(246, 143, 30, 0.06), rgba(246, 143, 30, 0.06)), #fafafa;
     border: none;
     border-bottom: 1px solid #e2dccf;
     display: flex;
@@ -468,7 +468,7 @@
     z-index: 2;
     transition: background 0.15s;
   }
-  .ds-toggle:hover { background: rgba(246, 143, 30, 0.12); color: #1a1d21; }
+  .ds-toggle:hover { background: linear-gradient(rgba(246, 143, 30, 0.12), rgba(246, 143, 30, 0.12)), #fafafa; color: #1a1d21; }
   .ds-toggle::before {
     content: '› › ›';  /* default: collapsed-indicator (point right to close) */
     margin-right: auto;
@@ -736,6 +736,35 @@
 
   /* Print: hide sidebar */
   @media print { .desktop-sticky { display: none !important; } body { padding-right: 0 !important; } }
+
+  /* Desktop windows 700–980 px (small laptop, browser zoom / OS scaling):
+     mouse + hover → keep the sidebar instead of the touch bottom bar */
+  @media (min-width: 700px) and (max-width: 980px) and (hover: hover) and (pointer: fine) {
+    .desktop-sticky { display: block !important; }
+    .mobile-sticky { display: none !important; }
+    body { padding-right: var(--ds-w); padding-bottom: 0 !important; }
+  }
+
+  /* Tool map (sidebar): where to look · what it answers · evidence class */
+  .ds-map { display: flex; flex-direction: column; gap: 4px; }
+  .ds-map-btn {
+    display: grid; grid-template-columns: 34px 1fr; gap: 8px; align-items: center;
+    width: 100%; text-align: left; background: #fff; border: 1px solid #e2dccf;
+    border-radius: 4px; padding: 6px 8px; cursor: pointer; font-family: 'Inter', sans-serif;
+    color: #1a1d21; transition: all 0.12s;
+  }
+  .ds-map-btn:hover { border-color: #F68F1E; background: rgba(246,143,30,0.04); }
+  .ds-map-btn .ev-badge { margin: 0; justify-content: center; padding: 2px 0; }
+  .ds-map-t { font-size: 12px; font-weight: 600; line-height: 1.25; }
+  .ds-map-q { display: block; font-size: 10.5px; font-weight: 400; color: #6e7680; line-height: 1.3; }
+  .ds-ev-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .ds-ev-legend .ev-badge { margin: 0; }
+  .ds-note { font-size: 11px; color: #6e7680; line-height: 1.45; margin-top: 8px; }
+  .ds-manual-link {
+    display: block; margin-top: 10px; text-align: center; padding: 8px 10px; border-radius: 4px;
+    border: 1.5px solid #F68F1E; color: #c46f0e; font-size: 12px; font-weight: 600; text-decoration: none;
+  }
+  .ds-manual-link:hover { background: rgba(246,143,30,0.08); }
 
   /* Hide when gate locked */
   html.rfpgv-locked .desktop-sticky { display: none !important; }
@@ -4723,6 +4752,7 @@
     <button class="msc-jump-btn" data-target="snapshotCard">📸</button>
     <button class="msc-jump-btn" data-target="executiveCard">📊</button>
     <button class="msc-jump-btn" data-target="topAnchor">▲</button>
+    <a class="msc-jump-btn" href="RF-PGV_Tool_Manual.pdf" target="_blank" rel="noopener" style="text-decoration:none">📘</a>
   </div>
 
   <div class="msc-top-row">
@@ -4828,19 +4858,35 @@
       <div class="ds-slider-range"><span>1 fast</span><span>50 quasi-static</span></div>
     </div>
 
-    <!-- Jump nav -->
+    <!-- Tool map: where to look · what it answers · evidence class -->
     <div class="ds-block">
-      <div class="ds-block-label">Jump to Chart</div>
-      <div class="ds-jump-list">
-        <button class="ds-jump-btn" data-target="forceCard">F</button>
-        <button class="ds-jump-btn" data-target="pressureCard">P</button>
-        <button class="ds-jump-btn" data-target="vibCard">PSD</button>
-        <button class="ds-jump-btn" data-target="resCard">f₀</button>
-        <button class="ds-jump-btn" data-target="modalCard">ζ</button>
-        <button class="ds-jump-btn" data-target="shockCard">⚡</button>
-        <button class="ds-jump-btn" data-target="snapshotCard">Snap</button>
-        <button class="ds-jump-btn" data-target="executiveCard">Exec</button>
+      <div class="ds-block-label">Tool Map · Jump to</div>
+      <div class="ds-map">
+        <button class="ds-jump-btn ds-map-btn" data-target="validityStrip"><span class="ev-badge ev-M"><b>Δ</b></span><span class="ds-map-t">Validity window<span class="ds-map-q">How far from the calibration anchor?</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="forceCard"><span class="ev-badge ev-C"><b>C</b></span><span class="ds-map-t">Bearing forces F1–F3<span class="ds-map-q">Load split at the current angle</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="trajCard"><span class="ev-badge ev-C"><b>C</b></span><span class="ds-map-t">Force vs. angle<span class="ds-map-q">Where in the closing sweep forces rise</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="pressureCard"><span class="ev-badge ev-B"><b>B/C</b></span><span class="ds-map-t">Stress proxy<span class="ds-map-q">FE-anchored peak vs. limit per load regime</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="gateCard"><span class="ev-badge ev-B"><b>B</b></span><span class="ds-map-t">Hard-limit screen<span class="ds-map-q">p · pU · v vs. datasheet — exclusion test</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="vibCard"><span class="ev-badge ev-D"><b>D</b></span><span class="ds-map-t">Vibration spectrum<span class="ds-map-q">Broad vs. selective response (synthetic)</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="resCard"><span class="ev-badge ev-D"><b>D</b></span><span class="ds-map-t">Resonance position<span class="ds-map-q">f₀ vs. excitation fa (f₀ assumed)</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="modalCard"><span class="ev-badge ev-M"><b>A/D</b></span><span class="ds-map-t">Modal parameter set<span class="ds-map-q">E′ · tan δ · ζ · Q — what drives it</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="shockCard"><span class="ev-badge ev-D"><b>D</b></span><span class="ds-map-t">Shock response<span class="ds-map-q">When compliance becomes protective</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="snapshotCard"><span class="ev-badge ev-C"><b>C</b></span><span class="ds-map-t">Snapshot report<span class="ds-map-q">Current point, exportable</span></span></button>
+        <button class="ds-jump-btn ds-map-btn" data-target="executiveCard"><span class="ev-badge ev-C"><b>C</b></span><span class="ds-map-t">Cycle report<span class="ds-map-q">Full 90°→0° sweep, dominant mechanism</span></span></button>
       </div>
+    </div>
+
+    <!-- Evidence legend + manual -->
+    <div class="ds-block">
+      <div class="ds-block-label">How valid is a number?</div>
+      <div class="ds-ev-legend">
+        <span class="ev-badge ev-A" title="Measured or digitised from a traceable source case"><b>A</b> Measured</span>
+        <span class="ev-badge ev-B" title="Dimensionally valid calculation from A-level inputs"><b>B</b> Derived</span>
+        <span class="ev-badge ev-C" title="Fit or proxy preserving a directional pattern — not a precise value"><b>C</b> Heuristic</span>
+        <span class="ev-badge ev-D" title="Scenario to reveal a possible mechanism — qualitative only"><b>D</b> Hypothesis</span>
+      </div>
+      <div class="ds-note">One calibration anchor: power · 0° · Δd 0.200 mm. Everything else is reconstructed or extrapolated. The tool opens a conversation — it does not close one.</div>
+      <a class="ds-manual-link" href="RF-PGV_Tool_Manual.pdf" target="_blank" rel="noopener">📘 User Manual (PDF)</a>
     </div>
   </div>
 </aside>
@@ -8744,8 +8790,13 @@ mobileLoopBtn.addEventListener('click', toggleLoop);
   if (dsLoop) dsLoop.addEventListener('click', toggleLoop);
 
   // Collapse / expand
+  const DS_KEY = 'rfpgv-ds-collapsed';
+  let dsPref = null;
+  try { dsPref = localStorage.getItem(DS_KEY); } catch (e) {}
+  if (dsPref === '1' || (dsPref === null && window.innerWidth < 1100)) document.body.classList.add('ds-collapsed');
   if (dsTog) dsTog.addEventListener('click', () => {
-    document.body.classList.toggle('ds-collapsed');
+    const c = document.body.classList.toggle('ds-collapsed');
+    try { localStorage.setItem(DS_KEY, c ? '1' : '0'); } catch (e) {}
   });
 
   // Jump-nav buttons inside sidebar

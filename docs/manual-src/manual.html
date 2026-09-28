@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RF-PGV Tool · User Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 16mm 16mm 18mm; }
+  :root { --o:#F68F1E; --od:#c46f0e; --ink:#1a1d21; --mute:#6e7680; --line:#e2dccf; --cream:#f5ecdf;
+          --A:#1d8a4f; --B:#3b78b0; --C:#b07a05; --D:#7d6fb0; }
+  * { box-sizing: border-box; }
+  body { font-family: Inter, 'Helvetica Neue', Arial, sans-serif; color: var(--ink); font-size: 9.6pt; line-height: 1.5; margin: 0; }
+  h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; font-weight: 500; margin: 0; }
+  h2 { font-size: 19pt; margin: 0 0 3mm; }
+  h2 em, h1 em { color: var(--o); }
+  h3 { font-size: 12.5pt; margin: 5mm 0 1.5mm; }
+  p { margin: 0 0 2.4mm; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; letter-spacing: 1.6px; text-transform: uppercase; color: var(--o); margin-bottom: 2mm; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 8.4pt; }
+  .mute { color: var(--mute); }
+  ul { margin: 0 0 2.4mm; padding-left: 5mm; }
+  li { margin-bottom: 1mm; }
+
+  /* Cover */
+  .cover { height: 258mm; display: flex; flex-direction: column; justify-content: space-between; }
+  .brand { font-weight: 700; letter-spacing: 2px; font-size: 9pt; }
+  .brand span { color: var(--o); }
+  .cover h1 { font-size: 34pt; line-height: 1.12; margin: 8mm 0 5mm; }
+  .cover .sub { font-size: 12pt; color: var(--mute); max-width: 140mm; }
+  .core { border-left: 3px solid var(--o); padding: 5mm 7mm; background: var(--cream); border-radius: 0 4px 4px 0; }
+  .core .big { font-family: 'Playfair Display', Georgia, serif; font-size: 17pt; line-height: 1.3; }
+  .core .big em { color: var(--o); }
+  .foot { font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; color: var(--mute); border-top: 1px solid var(--line); padding-top: 3mm; display: flex; justify-content: space-between; }
+
+  /* Evidence badges */
+  .ev { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 7.5pt; font-weight: 600; letter-spacing: .5px;
+        padding: .3mm 1.8mm; border-radius: 2px; border: 1px solid; white-space: nowrap; }
+  .ev.A { color: var(--A); background: rgba(29,138,79,.10); border-color: rgba(29,138,79,.35); }
+  .ev.B { color: var(--B); background: rgba(59,120,176,.10); border-color: rgba(59,120,176,.35); }
+  .ev.C { color: var(--C); background: rgba(201,138,6,.12); border-color: rgba(201,138,6,.4); }
+  .ev.D { color: var(--D); background: rgba(125,111,176,.10); border-color: rgba(125,111,176,.35); }
+  .ev.M { color: #6e7680; background: rgba(120,120,120,.08); border-color: rgba(120,120,120,.35); }
+
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 3mm; font-size: 8.6pt; }
+  th { text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 7pt; letter-spacing: 1px; text-transform: uppercase; color: var(--mute);
+       border-bottom: 1.5px solid var(--ink); padding: 1.5mm 2mm; font-weight: 600; }
+  td { border-bottom: 1px solid var(--line); padding: 1.8mm 2mm; vertical-align: top; }
+  td:first-child { font-weight: 600; }
+  tr { page-break-inside: avoid; }
+
+  .box { border: 1px solid var(--line); border-radius: 4px; padding: 3.5mm 4.5mm; margin: 2mm 0 3mm; page-break-inside: avoid; }
+  .box.warn { border-left: 3px solid #b8341f; }
+  .box.ok { border-left: 3px solid var(--A); }
+  .box.note { border-left: 3px solid var(--o); background: #fcf8f2; }
+  .box .t { font-family: 'JetBrains Mono', monospace; font-size: 7.3pt; letter-spacing: 1.3px; text-transform: uppercase; color: var(--mute); margin-bottom: 1.5mm; }
+
+  /* Toolbar page */
+  .tb { display: grid; grid-template-columns: 52mm 52mm 1fr; gap: 5mm; align-items: start; }
+  .crop { width: 52mm; overflow: hidden; border: 1px solid var(--line); border-radius: 3px; }
+  .crop img { width: 52mm; display: block; }
+  .crop.top { height: calc(52mm * 720 / 290); }
+  .crop.bot { height: calc(52mm * 848 / 290); }
+  .crop.bot img { margin-top: calc(-52mm * 720 / 290); }
+  .tb ol { padding-left: 4.5mm; margin: 0; font-size: 8.7pt; }
+  .tb ol li { margin-bottom: 2mm; }
+
+  /* Section cards */
+  .sec { border: 1px solid var(--line); border-radius: 4px; padding: 3.5mm 4.5mm 2mm; margin-bottom: 3.5mm; page-break-inside: avoid; }
+  .sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; margin-bottom: 1.5mm; }
+  .sec-h .n { font-family: 'Playfair Display', Georgia, serif; font-size: 12.5pt; }
+  .sec-h .n small { font-family: 'JetBrains Mono', monospace; font-size: 7pt; color: var(--mute); letter-spacing: 1px; margin-right: 2mm; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+  .grid3 .k { font-family: 'JetBrains Mono', monospace; font-size: 6.8pt; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: .8mm; }
+  .k.see { color: var(--B); } .k.ins { color: var(--A); } .k.not { color: #b8341f; }
+  .grid3 p { font-size: 8.5pt; line-height: 1.42; margin: 0 0 1.5mm; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .steps { counter-reset: s; list-style: none; padding: 0; }
+  .steps li { counter-increment: s; position: relative; padding-left: 9mm; margin-bottom: 2.6mm; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: -.3mm; width: 6mm; height: 6mm; border-radius: 50%;
+                      background: var(--o); color: #fff; font-weight: 700; font-size: 8pt; display: flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER + PREFACE ============ -->
+<section class="page cover">
+  <div>
+    <div class="brand">FOISSNER &nbsp;|&nbsp; <span>●</span> RF-PGV TOOL · V0_1_2</div>
+    <h1>User Manual<br><em>Reading the tool honestly.</em></h1>
+    <div class="sub">Preselection guide for guide-vane bearings in reversible pump-turbines — elastic (deva.tex 552) vs. rigid (deva.bm 392).</div>
+  </div>
+
+  <div>
+    <div class="eyebrow">Preface</div>
+    <div class="core">
+      <div class="big">This tool stands at the <em>beginning</em> of a conversation — never at its end.</div>
+      <p style="margin:3mm 0 0">It is an opener, not a final authority. It shows which damage mechanism plausibly governs a load situation and where an elastic bearing may outperform a rigid one — or the other way round. It does not predict service life, it does not compute exact forces away from its single calibration point, and it does not claim to replace machine data, FE or CFD. What it cannot represent, it does not pretend to represent: every number on screen carries its own evidence class.</p>
+    </div>
+    <p style="margin-top:5mm">The right outcome of a session with this tool is therefore not a material decision but a <b>better next question</b>: which measurement, which drawing, which operating data would settle the point that the tool made visible.</p>
+    <p class="mute">How to use this manual: Chapter 1 explains the toolbar, your permanent entry point. Chapter 2 explains how valid a number is. Chapter 3 goes through every section of the tool — what you see, what you can assess, what you cannot. Chapter 4 gives a short conversation workflow.</p>
+  </div>
+
+  <div class="foot"><span>© Ing. Manfred Foissner · 2026</span><span>m4nfr41d-spec.github.io/PlainbearingsinPumpturbines</span></div>
+</section>
+
+<!-- ============ 1 · TOOLBAR ============ -->
+<section class="page">
+  <div class="eyebrow">Chapter 1</div>
+  <h2>The toolbar — <em>your control centre</em></h2>
+  <p>On desktop the toolbar is a <b>sidebar on the right edge</b>; it stays in place while you scroll. Click the header strip (<span class="mono">› › › QUICK CONTROLS</span>) to collapse it to a thin strip and click again to expand it; the tool remembers your choice. On narrow desktop windows (below approx. 1100 px) it starts collapsed. On iPad and phone the same controls sit in a <b>bottom bar</b> with a compact jump row.</p>
+
+  <div class="tb">
+    <div class="crop top"><img src="sidebar.png" alt="Sidebar, upper part"></div>
+    <div class="crop bot"><img src="sidebar.png" alt="Sidebar, lower part"></div>
+    <ol>
+      <li><b>Cycle animation.</b> ▶ plays the closing sweep 90° → 0°; ↻ loops it. The pill shows the operating phase (idle · normal · transition · closing).</li>
+      <li><b>Validity pill.</b> Live distance from the calibration anchor: <span class="ev A">CALIBRATED ANCHOR</span> → <span class="ev B">NEAR ANCHOR</span> → <span class="ev C">EXTRAPOLATED</span> → <span class="ev D" style="color:#b8341f;border-color:#b8341f">FAR EXTRAPOLATION</span>. Read every output through this pill.</li>
+      <li><b>Hard-limit line.</b> <span class="mono">tex ✓ · bm ✓</span> — does each material pass its datasheet limits (projected pressure, pU, sliding speed) at the current point?</li>
+      <li><b>Operating mode.</b> Pump / Power generation. Only power mode is anchored — pump mode is always extrapolated.</li>
+      <li><b>Guide-vane angle</b> (0° closed … 90° open). Anchor at 0°.</li>
+      <li><b>Radial clearance Δd</b> (0.05 … 0.35 mm). Anchor at 0.200 mm. Definition (radial vs. diametral) still to be verified against source.</li>
+      <li><b>Shock pulse τ</b> (1 … 50 ms). Drives only the shock section.</li>
+      <li><b>Tool map.</b> One click jumps to each section; the badge shows its evidence class and the line below says which question the section answers.</li>
+      <li><b>Evidence legend</b> A–D and the link to this manual.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 2 · VALIDITY ============ -->
+<section class="page">
+  <div class="eyebrow">Chapter 2</div>
+  <h2>How valid is a number? — <em>evidence classes</em></h2>
+  <p>The tool separates <b>what was measured</b>, <b>what follows from it by calculation</b>, <b>what is an approximation</b> and <b>what is an assumption</b>. Every card carries one of these badges.</p>
+
+  <table>
+    <tr><th style="width:24mm">Class</th><th>Meaning</th><th style="width:48mm">In plain words</th><th style="width:42mm">How to use it</th></tr>
+    <tr><td><span class="ev A">A · Measured</span></td><td>Measured or digitised from a traceable source case (test report, FE result, DMA datasheet).</td><td>A real data point.</td><td>Quote it — with its source and conditions.</td></tr>
+    <tr><td><span class="ev B">B · Derived</span></td><td>Dimensionally valid calculation from A-level inputs (e.g. p = F / (d·L)).</td><td>Plausibly derived — only as good as its inputs.</td><td>Use for screening; check the inputs.</td></tr>
+    <tr><td><span class="ev C">C · Heuristic</span></td><td>Calibrated fit or proxy that preserves a directional pattern — not a precise value.</td><td>An approximation anchored to one data point.</td><td>Read the trend and the direction, not the digits.</td></tr>
+    <tr><td><span class="ev D">D · Hypothesis</span></td><td>Scenario to reveal a possible mechanism — qualitative only.</td><td>An estimate based on assumptions and experience.</td><td>Use to ask the question — then measure.</td></tr>
+    <tr><td><span class="ev M">A/D · Mixed</span></td><td>Parameter set combining datasheet values (A) with assumed modal values (D).</td><td>Partly real, partly assumed.</td><td>Check which line is which.</td></tr>
+  </table>
+
+  <h3>The calibration anchor</h3>
+  <p>The entire model rests on <b>one calibrated operating point</b>: <span class="mono">power mode · 0° (closed) · Δd 0.200 mm</span>. At this point forces and FE peak stresses are reproduced. Away from it, curve shapes are reconstructed and values extrapolated. The validity pill shows how far you are away:</p>
+  <table>
+    <tr><th>Parameter</th><th>Calibrated anchor</th><th>Near anchor</th><th>Extrapolated</th><th>Far extrapolation</th></tr>
+    <tr><td>Clearance Δd</td><td>0.200 mm (± 0.0025)</td><td>± 0.025 mm</td><td>± 0.075 mm</td><td>beyond ± 0.075 mm</td></tr>
+    <tr><td>Guide-vane angle</td><td>≤ 2°</td><td>≤ 10°</td><td>&gt; 10°</td><td>—</td></tr>
+    <tr><td>Operating mode</td><td>Power generation</td><td>—</td><td>Pump (no anchor)</td><td>—</td></tr>
+  </table>
+  <p class="mute">The worst of the three parameters sets the overall level. Example: 15° in power mode at 0.200 mm is already <i>Extrapolated</i> — because of the angle.</p>
+
+  <div class="box note">
+    <div class="t">Rule of thumb</div>
+    The closer the pill is to <b>Calibrated anchor</b> and the further left the badge is (A → D), the more a number can bear. A <span class="ev D">D</span> result at <b>Far extrapolation</b> is a question, not an answer.
+  </div>
+</section>
+
+<!-- ============ 3 · SECTIONS ============ -->
+<section class="page">
+  <div class="eyebrow">Chapter 3</div>
+  <h2>Section by section — <em>what you can read where</em></h2>
+
+  <table>
+    <tr><th>Section</th><th style="width:16mm">Class</th><th>Question it answers</th><th>Robust takeaway</th></tr>
+    <tr><td>Validity window</td><td><span class="ev M">meta</span></td><td>How far am I from the anchor?</td><td>Read before anything else.</td></tr>
+    <tr><td>01 Bearing forces F1–F3</td><td><span class="ev C">C</span></td><td>How is the load split between the three bearings?</td><td>F2 (middle, nearest the vane) carries most; F3 stays low.</td></tr>
+    <tr><td>Force vs. angle</td><td><span class="ev C">C</span></td><td>Where in the closing sweep do forces rise?</td><td>Forces ramp in the closing phase (~28°→18°) and plateau near closed.</td></tr>
+    <tr><td>02 System reaction (L2)</td><td><span class="ev C">C</span></td><td>Which material shows the higher overall load index?</td><td>Comparison index only — not a physical resultant.</td></tr>
+    <tr><td>03 Stress proxy</td><td><span class="ev B">B</span>/<span class="ev C">C</span></td><td>How does the local FE peak compare with the limit of the chosen load regime?</td><td>bm concentrates stress; tex spreads it. Regime choice flips the limit ranking.</td></tr>
+    <tr><td>03B Hard-limit screen</td><td><span class="ev B">B</span></td><td>Does a material fail p, pU or v against its datasheet?</td><td>Exclusion test. Capacity rarely decides — mechanisms do.</td></tr>
+    <tr><td>Vibration spectrum</td><td><span class="ev D">D</span></td><td>Broad or selective vibration behaviour?</td><td>Character only; synthetic, no physical unit.</td></tr>
+    <tr><td>Resonance position</td><td><span class="ev D">D</span></td><td>Where does f₀ sit relative to excitation fa?</td><td>bm's resonance advantage depends on clearance.</td></tr>
+    <tr><td>Modal parameter set</td><td><span class="ev M">A/D</span></td><td>Which material parameters drive the dynamics?</td><td>High damping (tex) vs. high stiffness (bm).</td></tr>
+    <tr><td>Shock response</td><td><span class="ev D">D</span></td><td>When does compliance protect?</td><td>Short impulses (&lt; ~10 ms): tendency tex. Long: bm.</td></tr>
+    <tr><td>Reports 01 / 02</td><td><span class="ev C">C</span></td><td>Snapshot / full-cycle summary for sharing</td><td>Always carries the validity header — keep it attached.</td></tr>
+    <tr><td>Scenario I/O</td><td>—</td><td>Save, share, restore a scenario</td><td>Reproducible customer conversations.</td></tr>
+  </table>
+
+  <div class="box warn">
+    <div class="t">Across all sections — not modelled</div>
+    Service life, wear rate, years · multi-mode resonances · temperature shift of material properties · squeeze-film damping at tight clearance · misalignment edge-loading · clearance drift from wear · cumulative impact fatigue · cavitation erosion. Nothing in the tool is a turbine simulation, FE solver or CFD model.
+  </div>
+</section>
+
+<section class="page">
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>OUTPUT 01 + LIVE CHART</small>Bearing forces &amp; force vs. angle</span><span class="ev C">C · HEURISTIC</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>F1 (lower), F2 (middle, nearest the guide vane), F3 (upper) in kN for both materials at the current angle, plus the full closing trajectory. Play draws the curve live like an oscilloscope.</p></div>
+      <div><div class="k ins">What you can assess</div><p>Load distribution and the phase in which forces rise. In the model tex develops higher absolute forces (compliance lets the shaft deflect), bm stays lower. Δd reacts differently: tex pivots around its optimum (~0.15 mm), bm scales more uniformly (optimum ~0.12 mm).</p></div>
+      <div><div class="k not">What it does not tell you</div><p>Exact forces away from 0° / 0.200 mm / power mode. Curve shape is reconstructed around one anchor. Use relative statements, not kN values, for anything but the anchor.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>OUTPUT 02</small>System reaction index</span><span class="ev C">C · HEURISTIC</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>√(F1² + F2² + F3²) per material and the percentage difference.</p></div>
+      <div><div class="k ins">What you can assess</div><p>A single comparison number within this model — useful to follow how the gap between the materials changes with angle and Δd.</p></div>
+      <div><div class="k not">What it does not tell you</div><p>It is not a physical force resultant: the reactions act at different bearings.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>OUTPUT 03</small>Stress proxy · load regime</span><span><span class="ev B">B at anchor</span> <span class="ev C">C elsewhere</span></span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>FE-anchored local peak stress per material against the limit of the selected regime (static · dynamic · impact). At the anchor the FE values 54.4 MPa (tex) / 116.1 MPa (bm) are reproduced → class B there, C elsewhere.</p></div>
+      <div><div class="k ins">What you can assess</div><p>tex distributes load over a broader footprint, bm concentrates it. The regime flips the ranking of the limits: static favours bm (280 vs. 230 MPa), dynamic favours tex (140 vs. 100 MPa). <b>Select the regime first, then compare.</b></p></div>
+      <div><div class="k not">What it does not tell you</div><p>A local peak stress is not projected bearing pressure — utilisation here is indicative. No impact limit is published; the impact setting shows the dynamic limit as a floor and is a test requirement, not a margin.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>OUTPUT 03B</small>Hard-limit screen</span><span class="ev B">B · DERIVED · INPUTS C</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>Projected pressure p = F2 / (d·L), sliding speed v and pU per material vs. datasheet limits, with PASS / FAIL. Inputs: bore d, bearing length L, swing β, cycle frequency f.</p></div>
+      <div><div class="k ins">What you can assess</div><p>A <b>non-compensatory</b> exclusion: a material that fails a hard limit is out, whatever its mechanism advantages. If both pass, capacity does not decide — the mechanisms (edge loading, damping, shock) do.</p></div>
+      <div><div class="k not">What it does not tell you</div><p>Geometry is a <b>placeholder</b> until you enter the real d × L. F2 is model-derived (C away from the anchor). bm limits come from the manual table; bm datasheet not yet in the source pack. No lifetime implied.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>LIVE CHART</small>Vibration spectrum</span><span class="ev D">D · HYPOTHESIS</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>Synthetic PSD curves at the three bearing positions, switching with the operating mode; dominant peak at 47 Hz in power mode.</p></div>
+      <div><div class="k ins">What you can assess</div><p>Character, not magnitude: tex shows broader bandwidth with more peaks; bm a narrower, more selective response — calm unless f₀ meets the excitation. Measured reference ratio tex/bm ≈ 1.58 at the anchor.</p></div>
+      <div><div class="k not">What it does not tell you</div><p>Spectra are illustrative, have no physical unit and are not derived from |H(f)|. Aggregated over the closing operation, not instantaneous.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>LIVE CHART</small>Resonance position</span><span class="ev D">D · HYPOTHESIS</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>Natural frequency f₀ of each material vs. dominant excitation fa (47 Hz power mode), with zones: resonance (±7 Hz), transition, safe (&gt; 2·fa).</p></div>
+      <div><div class="k ins">What you can assess</div><p>At the anchor tex sits close to fa (~49 Hz) but is heavily damped (Q ≈ 3.8); bm sits higher (~62 Hz) with a sharp Q ≈ 50. bm's advantage is <b>clearance-conditional</b>: bm's f₀ drops about twice as fast with Δd (−120 vs. −60 Hz/mm) and can fall into the resonance zone at wide clearance.</p></div>
+      <div><div class="k not">What it does not tell you</div><p>f₀ is assumed — back-calculated from one PSD ratio, which cannot uniquely identify two natural frequencies. No resonance prediction; only a modal impact test on the installed system can tell.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>REFERENCE</small>Modal parameter set</span><span class="ev M">A/D · MIXED</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>E′, tan δ, ζ, Q, f₀, |H(fa)| and friction coefficient per material (DMA reference at 50 Hz, room temperature).</p></div>
+      <div><div class="k ins">What you can assess</div><p>The physical reason behind all dynamic sections: tex = low stiffness (E′ ≈ 3.5 GPa), high damping (tan δ ≈ 0.26); bm = high stiffness (≈ 105 GPa), low damping (≈ 0.02). Everything dynamic in the tool follows from this contrast.</p></div>
+      <div><div class="k not">What it does not tell you</div><p>Which line is measured and which assumed must be read per value: modulus from datasheet (A), f₀ and damping fitted (D). No temperature dependence.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>LIVE CHART</small>Shock &amp; impact response</span><span class="ev D">D · HYPOTHESIS</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>Normalised force response to a pulse of duration τ (1 ms cavitation … 50 ms quasi-static), optional shock patterns during the sweep (cavitation, vortex, water hammer, mixed; density, intensity, seed).</p></div>
+      <div><div class="k ins">What you can assess</div><p>Where the verdict swaps: for short impulses (&lt; ~10 ms) compliance becomes protective — tendency toward tex (peak reduction in the order of one third); for long pulses stiffness dominates — tendency toward bm. This is the section where "elastic or rigid" is decided by the event spectrum.</p></div>
+      <div><div class="k not">What it does not tell you</div><p>Single-degree-of-freedom, first-order filter (τ_char ≈ 5 ms) — qualitative only. No fatigue accumulation. Requires a site-specific shock spectrum to become an argument.</p></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="n"><small>REPORTS · PERSISTENCE</small>Snapshot, cycle report, scenario I/O</span><span class="ev C">C · HEURISTIC</span></div>
+    <div class="grid3">
+      <div><div class="k see">What you see</div><p>Report 01 captures the current point, Report 02 the full 90° → 0° sweep with dominant failure-mode assessment. Both export as PDF / text. Scenario I/O saves state + full sweep (1° steps) as JSON.</p></div>
+      <div><div class="k ins">What you can assess</div><p>A shareable, reproducible record of a conversation — which point was discussed, under which assumptions. The sweep export can be analysed in Excel or Python.</p></div>
+      <div><div class="k not">What it does not tell you</div><p>Reports combine C- and D-class modules. Every report carries a validity header — never forward a report without it.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · WORKFLOW ============ -->
+<section class="page">
+  <div class="eyebrow">Chapter 4</div>
+  <h2>Using it in a conversation — <em>from screen to next question</em></h2>
+  <div class="two">
+    <div>
+      <ol class="steps">
+        <li><b>Start at the anchor.</b> Power mode, 0°, 0.200 mm. Show what is measured and what the tool reproduces.</li>
+        <li><b>Enter the real geometry</b> in the hard-limit screen. If a material fails, it is out — the conversation is about the other one.</li>
+        <li><b>Select the load regime</b> that matches the customer's situation (static, alternating, impact) before comparing stress against limits.</li>
+        <li><b>Move one slider at a time</b> and watch the validity pill. Name the evidence class aloud when you quote a number.</li>
+        <li><b>Find the mechanism.</b> Edge loading? Resonance near fa? Frequent short impulses? The mechanism, not the material, is the result.</li>
+        <li><b>End with the open question</b> and generate the report as the record of what was discussed.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="box ok">
+        <div class="t">Typical next questions the tool leads to</div>
+        <ul style="margin:0">
+          <li>What is the real bearing geometry d × L and the clearance definition (radial / diametral)?</li>
+          <li>What is the actual excitation spectrum — is there a dominant peak near 47 Hz?</li>
+          <li>Are there frequent short events: cavitation, debris, vortex bursts, water hammer?</li>
+          <li>Is misalignment or edge loading known from inspection?</li>
+          <li>Can a modal impact test of the installed system be arranged?</li>
+          <li>What is the clearance today and how will it drift with wear?</li>
+        </ul>
+      </div>
+      <div class="box note">
+        <div class="t">Sentences that stay true</div>
+        "The tool shows a tendency under stated assumptions." · "This value is anchored / extrapolated / assumed." · "To decide this we need a measurement."
+      </div>
+      <div class="box warn">
+        <div class="t">Sentences to avoid</div>
+        "The tool proves…" · "Material X lasts N years." · "The force at 30° is exactly … kN." · "There is no resonance risk."
+      </div>
+    </div>
+  </div>
+
+  <h3>Source basis</h3>
+  <p class="mute">Calibration anchor from a manufacturer test report on these compound classes (Pereira, HYDRO 2025 — source pack pending): FE contact pressure at closed position (54.4 MPa tex / 116.1 MPa bm), PSD spectra at Δd 0.200 mm (47 Hz dominant peak, ratio tex/bm 1.58), bearing forces F1–F3 across angle. Material limits: tex 552 W87.00 bushing column; bm 392 per DEVA manual table 3.1.B. DMA reference data at 50 Hz, room temperature. All other values are reconstructed, extrapolated or assumed as labelled in the tool.</p>
+
+  <div class="foot" style="margin-top:8mm"><span>RF-PGV Tool · User Manual · v0_1_2</span><span>© Ing. Manfred Foissner · 2026</span></div>
+</section>
+
+</body>
+</html>
