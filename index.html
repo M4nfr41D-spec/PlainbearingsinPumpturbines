@@ -3485,7 +3485,7 @@
     border-left:3px solid #F68F1E;background:rgba(246,143,30,.07)}
   .ds-gates{margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:10px;text-align:center;opacity:.85}
   @media (max-width:800px){.geo-grid{grid-template-columns:1fr 1fr}.hl-wrap{grid-template-columns:1fr}}
-  /* ===== v0_1_2 · purpose & limits ===== */
+  /* ===== v0_1_3 · purpose & limits ===== */
   .purpose{margin:26px 0 8px;border:1px solid var(--line,#e2dccf);border-radius:9px;background:#fff;
     box-shadow:0 4px 16px rgba(0,0,0,.04);overflow:hidden}
   .purpose-bar{height:3px;background:linear-gradient(90deg,#1f4e79,#F68F1E)}
@@ -3539,7 +3539,7 @@
   <div class="rfpgv-gate-card">
     <div class="rfpgv-gate-brand">
       <div class="rfpgv-gate-mark">F</div>
-      <div class="rfpgv-gate-name">FOISSNER · RF-PGV TOOL · 0_1_2</div>
+      <div class="rfpgv-gate-name">FOISSNER · RF-PGV TOOL · 0_1_3</div>
       <div class="rfpgv-gate-title">Restricted access</div>
     </div>
     <div class="rfpgv-gate-sub">
@@ -3632,7 +3632,7 @@
       <span class="brand-tool">RF-PGV TOOL</span>
     </div>
     <div class="doc-meta">
-      FOISSNER RF-PGV TOOL · 0_1_2<br>
+      FOISSNER RF-PGV TOOL · 0_1_3<br>
       © Ing. Manfred Foissner · 2026
     </div>
   </header>
@@ -3641,7 +3641,7 @@
        HERO
        ============================================================ -->
   <section class="hero">
-    <div class="hero-eyebrow">Preselection Guide · Calibrated Scenario Exploration · v0_1_2</div>
+    <div class="hero-eyebrow">Preselection Guide · Calibrated Scenario Exploration · v0_1_3</div>
     <h1 class="hero-title">Elastic or rigid? <span class="accent">It depends on the mechanism.</span></h1>
     <p class="hero-lede">
       Every chart now derives from a unified <strong>modal parameter set</strong> for each material:
@@ -3652,7 +3652,7 @@
     </p>
   </section>
 
-  <!-- v0_1_2 · Purpose & limits -->
+  <!-- v0_1_3 · Purpose & limits -->
   <div class="purpose">
     <div class="purpose-bar"></div>
     <div class="purpose-in">
@@ -4527,9 +4527,9 @@
               <div class="res-mc-metric-sub">Lower = better absorption</div>
             </div>
             <div class="res-mc-metric">
-              <div class="res-mc-metric-label">Energy Absorbed</div>
+              <div class="res-mc-metric-label">Attenuation Index</div>
               <div class="res-mc-metric-value"><span id="texEnergyVal">50</span><span class="unit">%</span></div>
-              <div class="res-mc-metric-sub">In viscoelastic deformation</div>
+              <div class="res-mc-metric-sub">Proxy 1−a² · not dissipated energy</div>
             </div>
           </div>
           <div class="res-mc-narrative" id="texShockNarrative">
@@ -4550,9 +4550,9 @@
               <div class="res-mc-metric-sub">Slight dynamic overshoot</div>
             </div>
             <div class="res-mc-metric">
-              <div class="res-mc-metric-label">Energy Absorbed</div>
+              <div class="res-mc-metric-label">Attenuation Index</div>
               <div class="res-mc-metric-value"><span id="bmEnergyVal">−15</span><span class="unit">%</span></div>
-              <div class="res-mc-metric-sub">Mostly transmitted, some ringing</div>
+              <div class="res-mc-metric-sub">Proxy · negative = overshoot</div>
             </div>
           </div>
           <div class="res-mc-narrative" id="bmShockNarrative">
@@ -6377,9 +6377,9 @@ function classifyShockRegime(tau) {
 }
 
 const shockNarrativeTex = {
-  protected: (peak, energy) => `<strong>tex 552's compliance acts as a viscoelastic damper.</strong> Energy from the shock pulse is absorbed in material deformation — peak force at the bearing-shaft interface drops to ${(peak*100).toFixed(0)}% of input, ${energy.toFixed(0)}% of impulse energy is dissipated. Protection against edge cracking and plastic damage.`,
-  marginal:  (peak, energy) => `<strong>tex 552 still provides modest protection</strong> at this shock duration — peak force reduced to ${(peak*100).toFixed(0)}% of input (~${energy.toFixed(0)}% energy absorbed). Advantage narrows as the impulse becomes longer.`,
-  none:      (peak)         => `<strong>tex 552 sees the impulse essentially as quasi-static load</strong> — peak force ${(peak*100).toFixed(0)}% of input, negligible damping advantage. At this duration, the steady-state physics dominates and tex's compliance becomes a liability (higher wear).`
+  protected: (peak, energy) => `<strong>tex 552's compliance acts as a viscoelastic damper.</strong> In the first-order filter model the peak force at the bearing-shaft interface drops to ${(peak*100).toFixed(0)}% of input (attenuation index ${energy.toFixed(0)}% — a normalised proxy, not a dissipated-energy value). Tendency: lower impact peaks at the interface.`,
+  marginal:  (peak, energy) => `<strong>tex 552 still provides modest protection</strong> at this shock duration — peak force reduced to ${(peak*100).toFixed(0)}% of input (attenuation index ~${energy.toFixed(0)}%, proxy). Advantage narrows as the impulse becomes longer.`,
+  none:      (peak)         => `<strong>tex 552 sees the impulse essentially as quasi-static load</strong> — peak force ${(peak*100).toFixed(0)}% of input, negligible damping advantage. At this duration, the steady-state physics dominates and tex's compliance offers no attenuation advantage.`
 };
 const shockNarrativeBm = {
   transmitted: (peak) => `<strong>bm 392's stiffness transmits the impulse directly</strong> to the bearing interface — peak force ${(peak*100).toFixed(0)}% of input, with slight dynamic overshoot/ringing. For repeated impacts (cavitation cycling), edge-loading risk accumulates. Bronze's strength is steady-state capacity, not impact absorption.`,
@@ -6485,7 +6485,7 @@ function updateShockChart() {
 
   // Compute key metrics from the physics
   const { texAttn, bmAmp } = shockPhysics(tau);
-  const texEnergy = (1 - texAttn * texAttn) * 100;       // % absorbed
+  const texEnergy = (1 - texAttn * texAttn) * 100;       // normalised attenuation index (proxy, not dissipated energy)
   const bmEnergy  = (1 - bmAmp * bmAmp) * 100;            // negative if overshoot
 
   // Update displays
@@ -6543,16 +6543,16 @@ function updateShockChart() {
   const verdictBody = document.getElementById('shockVerdictBody');
   if (tau < 8) {
     verdictTitle.textContent = `Fast impact regime — tendency toward tex 552 (~${reductionPct.toFixed(0)} % peak-force reduction).`;
-    verdictBody.innerHTML = `For impact events shorter than ~10 ms, tex 552's compliance reduces peak bearing forces by ${reductionPct.toFixed(0)} % through viscoelastic energy absorption. bm 392's stiffness transmits the impulse with slight overshoot. <strong>Application implication:</strong> tex tends to be preferable where unpredictable impulse events dominate the failure mode — cavitation, debris, vortex bursts. <em>Confirm with site-specific shock spectrum measurement.</em>`;
+    verdictBody.innerHTML = `For impact events shorter than ~10 ms, tex 552's compliance reduces peak bearing forces by ${reductionPct.toFixed(0)} % in the first-order viscoelastic filter model. bm 392's stiffness transmits the impulse with slight overshoot. <strong>Application implication:</strong> tex tends to be preferable where unpredictable impulse events dominate the failure mode — cavitation, debris, vortex bursts. <em>Confirm with site-specific shock spectrum measurement.</em>`;
   } else if (tau < 25) {
     verdictTitle.textContent = `Medium impulse regime — tex 552 still ${reductionPct.toFixed(0)} % lower peak force.`;
-    verdictBody.innerHTML = `In this duration range, tex 552 maintains a noticeable protection advantage but the gap is closing. bm 392's steady-state benefits (lower wear, higher load capacity) start to balance the impact disadvantage. <strong>Tendency depends on the failure mode mix</strong> at the site — characterise the actual impulse spectrum.`;
+    verdictBody.innerHTML = `In this duration range, tex 552 maintains a noticeable protection advantage but the gap is closing. bm 392's steady-state properties (stiffness, static load rating) start to balance the impact disadvantage. <strong>Tendency depends on the failure mode mix</strong> at the site — characterise the actual impulse spectrum.`;
   } else if (tau < 40) {
     verdictTitle.textContent = `Transient-to-quasi-static — tex protection narrows, bm advantage emerges.`;
-    verdictBody.innerHTML = `Peak forces are now nearly identical between materials. The shock duration is long enough that compliance no longer attenuates significantly. <strong>The tendency shifts toward the steady-state physics</strong>: bm 392's stiffness reduces shaft deflection and bearing wear over the long run.`;
+    verdictBody.innerHTML = `Peak forces are now nearly identical between materials. The shock duration is long enough that compliance no longer attenuates significantly. <strong>The tendency shifts toward the steady-state physics</strong>: bm 392's stiffness reduces shaft deflection in the model (no wear model).`;
   } else {
-    verdictTitle.textContent = `Quasi-static regime — tendency toward bm 392 on lifetime performance.`;
-    verdictBody.innerHTML = `At this duration the impulse behaves essentially as a slow load. tex 552's compliance offers no protection benefit and may become a liability: more shaft deflection, more wear, lower load capacity. <strong>For sustained loading, the tendency favours bm 392</strong> — return to the steady-state cards above for the full picture.`;
+    verdictTitle.textContent = `Quasi-static regime — tendency toward bm 392 (steady-state physics).`;
+    verdictBody.innerHTML = `At this duration the impulse behaves essentially as a slow load. tex 552's compliance offers no protection benefit and may become a liability: more shaft deflection, lower static load rating. <strong>For sustained loading, the tendency favours bm 392</strong> — return to the steady-state cards above for the full picture.`;
   }
 }
 
@@ -6757,6 +6757,9 @@ function computePointMetrics(angle, mode, clearance, shockEvents) {
     texF2_with_shock, bmF2_with_shock,
     texPressure: texF.F2 * PRESSURE_RATIO_TEX,
     bmPressure: bmF.F2 * PRESSURE_RATIO_BM,
+    // stress proxy incl. transient shock spike (same F2 → proxy ratio)
+    texPressure_with_shock: texF2_with_shock * PRESSURE_RATIO_TEX,
+    bmPressure_with_shock: bmF2_with_shock * PRESSURE_RATIO_BM,
     texMag: vectorMagnitude(texF),
     bmMag: vectorMagnitude(bmF),
     fTex, fBm, texAmp, bmAmp,
@@ -6868,7 +6871,6 @@ function computeRiskVector(material, state, m) {
   const amp = material === 'tex' ? m.texAmp : m.bmAmp;
   // pCap: max recommended pressure used as normalisation for risk vector.
   // tex 552: 140 MPa = max recommended dynamic load per deva.tex 552 W87.00 data sheet (Federal-Mogul Deva, 2021).
-  // bm 392: 150 MPa = engineering estimate (data sheet pending; calibrated against Pereira test response).
   // bm 392: 100 MPa max dynamic (DEVA deva.bm manual, table 3.1.B); 280 MPa static.
   const pCap = regimeLimit(material);   // v0_1_0: regime-dependent DEVA limit
   const pressureRisk = Math.min(1, pressure / pCap);
@@ -7131,7 +7133,7 @@ function getImpactRegions(sweep, state) {
       color: '#d2691e',
       label: 'bm resonance zone',
       physics: 'bm 392\'s natural frequency f₀ sits within ±7 Hz of the dominant excitation. <strong>Sharp-Q amplification</strong> (Q ≈ 50) — small inputs become large bearing displacements.',
-      peak: resPts.length + '° of cycle with |H_bm| > 4×',
+      peak: 'f₀ in band at this Δd — applies to the whole sweep (f₀ modelled clearance-dependent, angle-invariant)',
       severity: resPts.length > 8 ? 'critical' : 'caution',
     });
   }
@@ -7306,7 +7308,7 @@ function analysePhases(sweep, mode, clearance, shockEvents) {
     if (pts.length === 0) return Object.assign({}, ph, { empty: true });
     const meanTexF2 = pts.reduce((s, p) => s + p.texF2_with_shock, 0) / pts.length;
     const meanBmF2  = pts.reduce((s, p) => s + p.bmF2_with_shock, 0) / pts.length;
-    const maxTexP   = Math.max(...pts.map(p => p.texPressure));
+    const maxTexP   = Math.max(...pts.map(p => p.texPressure));   // sustained (no shock spikes) — drives the pressure rule below
     const maxBmP    = Math.max(...pts.map(p => p.bmPressure));
     const texInRes  = pts.filter(p => p.texRisk === 'critical').length;
     const bmInRes   = pts.filter(p => p.bmRisk === 'critical').length;
@@ -7314,7 +7316,7 @@ function analysePhases(sweep, mode, clearance, shockEvents) {
     let phaseFavors = 'parity', phaseReason;
     if (bmInRes > pts.length * 0.3 && texInRes < pts.length * 0.3) {
       phaseFavors = 'tex';
-      phaseReason = 'bm in resonance for ' + bmInRes + ' of ' + pts.length + '° in this phase.';
+      phaseReason = 'bm f₀ lies in its resonance band at this Δd (f₀ modelled clearance-dependent, angle-invariant).';
     } else if (maxBmP > 130 && maxTexP < 100) {
       phaseFavors = 'bm';
       phaseReason = 'high pressure peaks reach ' + maxBmP.toFixed(0) + ' MPa — bm handles sustained pressure better.';
@@ -7466,7 +7468,7 @@ function generateSnapshotReport() {
             '<div class="rpt-mat-name tex">deva.tex 552</div>' +
             '<div class="rpt-mat-rows">' +
               '<div class="rpt-mat-row"><span class="k">F2 (incl. shock)</span><span class="v">' + Math.round(m.texF2_with_shock) + ' kN</span></div>' +
-              '<div class="rpt-mat-row"><span class="k">Resultant magnitude</span><span class="v">' + Math.round(m.texMag) + ' kN</span></div>' +
+              '<div class="rpt-mat-row"><span class="k">L2 index (not a resultant)</span><span class="v">' + Math.round(m.texMag) + ' kN</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Contact pressure</span><span class="v">' + m.texPressure.toFixed(1) + ' MPa</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Natural freq f₀</span><span class="v">' + m.fTex.toFixed(1) + ' Hz</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Q-factor</span><span class="v">' + qFactor(MATERIAL_PROPS.tex.zeta).toFixed(1) + '</span></div>' +
@@ -7478,7 +7480,7 @@ function generateSnapshotReport() {
             '<div class="rpt-mat-name bm">deva.bm 392</div>' +
             '<div class="rpt-mat-rows">' +
               '<div class="rpt-mat-row"><span class="k">F2 (incl. shock)</span><span class="v">' + Math.round(m.bmF2_with_shock) + ' kN</span></div>' +
-              '<div class="rpt-mat-row"><span class="k">Resultant magnitude</span><span class="v">' + Math.round(m.bmMag) + ' kN</span></div>' +
+              '<div class="rpt-mat-row"><span class="k">L2 index (not a resultant)</span><span class="v">' + Math.round(m.bmMag) + ' kN</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Contact pressure</span><span class="v">' + m.bmPressure.toFixed(1) + ' MPa</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Natural freq f₀</span><span class="v">' + m.fBm.toFixed(1) + ' Hz</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Q-factor</span><span class="v">' + qFactor(MATERIAL_PROPS.bm.zeta).toFixed(0) + '</span></div>' +
@@ -7990,8 +7992,8 @@ function generateExecutiveReport() {
     if (p.bmF2_with_shock > bmPeakF2)   { bmPeakF2  = p.bmF2_with_shock; bmPeakAngle  = p.angle; }
     texMeanF2 += p.texF2_with_shock;
     bmMeanF2 += p.bmF2_with_shock;
-    if (p.texPressure > maxPressure_tex) maxPressure_tex = p.texPressure;
-    if (p.bmPressure > maxPressure_bm)  maxPressure_bm  = p.bmPressure;
+    if (p.texPressure_with_shock > maxPressure_tex) maxPressure_tex = p.texPressure_with_shock;
+    if (p.bmPressure_with_shock > maxPressure_bm)  maxPressure_bm  = p.bmPressure_with_shock;
     if (prevRisk_tex !== null && prevRisk_tex !== p.texRisk) resonanceCrossings_tex++;
     if (prevRisk_bm !== null && prevRisk_bm !== p.bmRisk)   resonanceCrossings_bm++;
     prevRisk_tex = p.texRisk;
@@ -8063,9 +8065,9 @@ function generateExecutiveReport() {
   } else if (bmHasResonance) {
     materialTendency = 'deva.tex 552';
     dominantFailureMode = 'bm resonance sensitivity in the current clearance window';
-    primaryReason = 'The dominant mechanism is sustained vibration coupling. bm 392 spends ' + bmCriticalLen + '° of the cycle in its resonance band (f₀ within ±7 Hz of fa = 47 Hz). bm\'s sharp-Q response (Q = ' + qFactor(MATERIAL_PROPS.bm.zeta).toFixed(0) + ') makes stiffness unfavourable in this specific clearance window. tex 552 is favoured here as the lower-risk system response — not because compliance is automatically better, but because this scenario punishes bm\'s modal position.';
+    primaryReason = 'The dominant mechanism is sustained vibration coupling. At this clearance bm 392\'s modelled f₀ lies in its resonance band (f₀ within ±7 Hz of fa = 47 Hz; clearance-dependent, angle-invariant). bm\'s sharp-Q response (Q = ' + qFactor(MATERIAL_PROPS.bm.zeta).toFixed(0) + ') makes stiffness unfavourable in this specific clearance window. tex 552 is favoured here as the lower-risk system response — not because compliance is automatically better, but because this scenario punishes bm\'s modal position.';
     secondaryReasons = [
-      'tex 552 critical resonance exposure: ' + texCriticalLen + '° vs bm 392: ' + bmCriticalLen + '°.',
+      'Resonance condition at this Δd: tex ' + (texCriticalLen ? 'in band' : 'outside band') + ' / bm ' + (bmCriticalLen ? 'in band' : 'outside band') + ' (f₀ modelled clearance-dependent, angle-invariant).',
       'Mean F2 over cycle: tex ' + texMeanF2.toFixed(0) + ' kN vs bm ' + bmMeanF2.toFixed(0) + ' kN.'
     ];
     hartefallAddressed = 'sustained-vibration / resonance failure mode';
@@ -8106,7 +8108,7 @@ function generateExecutiveReport() {
     primaryReason = 'The current envelope is balanced. The report therefore does not select a default material. This is deliberate: the bearing does not wear in average operation — it wears where the dominant damage mechanism lives. Without a clear dominant driver (fast impact, closed-vane pulsation, resonance coupling, edge loading, or quasi-static pressure), a material preference would be a modelling bias rather than an engineering conclusion.';
     hartefallAddressed = 'mixed operating window — site-specific dominant failure mode required';
     secondaryReasons = [
-      'Resonance exposure: tex ' + texCriticalLen + '° critical / bm ' + bmCriticalLen + '° critical across cycle.',
+      'Resonance condition at this Δd: tex ' + (texCriticalLen ? 'in band' : 'outside band') + ' / bm ' + (bmCriticalLen ? 'in band' : 'outside band') + ' (f₀ modelled clearance-dependent, angle-invariant).',
       'Mean F2: tex ' + texMeanF2.toFixed(0) + ' kN / bm ' + bmMeanF2.toFixed(0) + ' kN.',
       'Closed-vane full-load state is counted: ' + (closedFullLoadActive ? 'yes, Power-Gen mode.' : 'not dominant in Pump mode.')
     ];
@@ -8245,10 +8247,10 @@ function generateExecutiveReport() {
             '<div class="rpt-mat-rows">' +
               '<div class="rpt-mat-row"><span class="k">Peak F2 (with shocks)</span><span class="v">' + texPeakF2.toFixed(0) + ' kN @ ' + texPeakAngle.toFixed(0) + '°</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Mean F2 over cycle</span><span class="v">' + texMeanF2.toFixed(0) + ' kN</span></div>' +
-              '<div class="rpt-mat-row"><span class="k">Max contact pressure</span><span class="v">' + maxPressure_tex.toFixed(1) + ' MPa</span></div>' +
-              '<div class="rpt-mat-row"><span class="k">Time in resonance</span><span class="v">' + texCriticalLen + '° of cycle</span></div>' +
+              '<div class="rpt-mat-row"><span class="k">Max stress proxy (incl. shocks)</span><span class="v">' + maxPressure_tex.toFixed(1) + ' MPa</span></div>' +
+              '<div class="rpt-mat-row"><span class="k">Resonance condition @ Δd</span><span class="v">' + (texCriticalLen ? 'in band' : 'outside band') + ' · angle-invariant</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Risk-zone crossings</span><span class="v">' + resonanceCrossings_tex + '</span></div>' +
-              '<div class="rpt-mat-row"><span class="k">Shock energy absorbed</span><span class="v">' + ((1 - texAttn**2) * 100).toFixed(0) + ' %</span></div>' +
+              '<div class="rpt-mat-row"><span class="k">Shock attenuation index (proxy)</span><span class="v">' + ((1 - texAttn**2) * 100).toFixed(0) + ' %</span></div>' +
             '</div>' +
           '</div>' +
           '<div class="rpt-mat-card bm">' +
@@ -8256,8 +8258,8 @@ function generateExecutiveReport() {
             '<div class="rpt-mat-rows">' +
               '<div class="rpt-mat-row"><span class="k">Peak F2 (with shocks)</span><span class="v">' + bmPeakF2.toFixed(0) + ' kN @ ' + bmPeakAngle.toFixed(0) + '°</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Mean F2 over cycle</span><span class="v">' + bmMeanF2.toFixed(0) + ' kN</span></div>' +
-              '<div class="rpt-mat-row"><span class="k">Max contact pressure</span><span class="v">' + maxPressure_bm.toFixed(1) + ' MPa</span></div>' +
-              '<div class="rpt-mat-row"><span class="k">Time in resonance</span><span class="v">' + bmCriticalLen + '° of cycle</span></div>' +
+              '<div class="rpt-mat-row"><span class="k">Max stress proxy (incl. shocks)</span><span class="v">' + maxPressure_bm.toFixed(1) + ' MPa</span></div>' +
+              '<div class="rpt-mat-row"><span class="k">Resonance condition @ Δd</span><span class="v">' + (bmCriticalLen ? 'in band' : 'outside band') + ' · angle-invariant</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Risk-zone crossings</span><span class="v">' + resonanceCrossings_bm + '</span></div>' +
               '<div class="rpt-mat-row"><span class="k">Shock dyn. overshoot</span><span class="v">' + ((bmDynAmp - 1) * 100).toFixed(0) + ' %</span></div>' +
             '</div>' +
@@ -8313,8 +8315,8 @@ function generateExecutiveReport() {
                 '<div class="rpt-phase-sub">' + ph.desc + '</div>' +
                 '<div class="rpt-phase-metrics">' +
                   '<div class="rpt-phase-metric"><span class="k">Mean F2 · tex / bm</span><span class="v">' + ph.meanTexF2.toFixed(0) + ' / ' + ph.meanBmF2.toFixed(0) + ' kN</span></div>' +
-                  '<div class="rpt-phase-metric"><span class="k">Max pressure · tex / bm</span><span class="v">' + ph.maxTexP.toFixed(0) + ' / ' + ph.maxBmP.toFixed(0) + ' MPa</span></div>' +
-                  '<div class="rpt-phase-metric"><span class="k">In resonance · tex / bm</span><span class="v">' + ph.texInRes + '° / ' + ph.bmInRes + '°</span></div>' +
+                  '<div class="rpt-phase-metric"><span class="k">Max stress proxy (sustained) · tex / bm</span><span class="v">' + ph.maxTexP.toFixed(0) + ' / ' + ph.maxBmP.toFixed(0) + ' MPa</span></div>' +
+                  '<div class="rpt-phase-metric"><span class="k">Resonance band @ Δd · tex / bm</span><span class="v">' + (ph.texInRes ? 'in' : 'out') + ' / ' + (ph.bmInRes ? 'in' : 'out') + '</span></div>' +
                   '<div class="rpt-phase-metric"><span class="k">Shocks in phase</span><span class="v">' + ph.shocksInPhase + '</span></div>' +
                 '</div>' +
                 '<div class="rpt-phase-verdict ' + ph.phaseFavors + '">' +
@@ -8577,7 +8579,7 @@ function buildExportObject() {
   });
 
   return {
-    version: 'v8',
+    version: '0_1_3',
     tool: 'FOISSNER RF-PGV TOOL 0_0_8',
     timestamp: new Date().toISOString(),
     state: { angle, mode, clearance, shockTau, loopMode: state.loopMode, shockPattern: state.shockPattern },
