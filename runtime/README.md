@@ -21,9 +21,16 @@ This folder is the **authoritative runtime path** for the source-constrained can
    - Explicitly prevents deriving FE contact pressure from live F2.
 
 4. `rfpgv_runtime_integration_v1.js`
-   - Surgery-03 runtime wiring.
+   - Surgery-03 primary runtime wiring.
    - Makes force bars, force trajectory, L2 comparison index, schematic and engineering note use the governed force path.
    - Converts the pressure card to the separate fixed FE source case.
+
+5. `rfpgv_runtime_closure_v1.js`
+   - Surgery-03B closure layer.
+   - Routes `computePointMetrics` through the governed force bridge so hard-limit screen and both report generators consume the same F1/F2/F3 path.
+   - Replaces report pressure-sweep graphics with the separate Figure-2 FE source case and adds an explicit governance note.
+   - Rewrites JSON computed forces and the full 1° sweep from the governed API and adds evidence metadata.
+   - Exposes `RFPGV_RUNTIME_AUDIT.run()` for current-state consistency checks.
 
 ## Not runtime dependencies
 
@@ -33,7 +40,7 @@ In particular, `calibration/rf_pgv_force_adapter_candidate_v1.js` is superseded 
 
 ## Current migration boundary
 
-Integrated in Surgery 03:
+Integrated in Surgery 03 / 03B:
 - live F1/F2/F3 values
 - full force trajectory
 - current-angle marker values
@@ -41,14 +48,19 @@ Integrated in Surgery 03:
 - schematic force arrows
 - engineering narrative for near closure vs fully closed
 - Figure-2 FE pressure card as an independent source case
+- projected-pressure / pU hard-limit screen using governed F2 + geometry
+- snapshot/executive report force calculations using governed F1/F2/F3
+- report pressure graphic replaced by separate non-angle-resolved Figure-2 FE case
+- JSON export current computed forces and full closing sweep using governed API
+- evidence metadata for force lineage, FE pressure separation and hard-limit path
+- browser current-state runtime audit hook
 
 Still pending before merge to `main`:
-- projected-pressure / pU hard-limit screen must consume the governed force API
-- snapshot/executive reports must consume the governed force API and stop generating a pressure sweep from the old proxy
-- JSON export/import computed metrics must consume the governed force API
-- regression of all output surfaces
-- later PSD/FRF correction (separate surgery)
+- browser end-to-end regression of all report/render/export surfaces on the branch
+- review of remaining legacy report wording that can imply stronger model authority than intended
+- later PSD / FRF correction and 1.58 metric clarification (separate surgery)
+- source replacement when original numerical Pereira/HYDRO data become available
 
 ## Release rule
 
-Do not merge this candidate to `main` until every user-visible force-dependent output is routed through one governed API and the regression gates pass.
+Do not merge this candidate to `main` until every user-visible force-dependent output is routed through one governed API, the browser regression gates pass, and no pressure-vs-angle claim is produced from the Figure-2 FE source case.
