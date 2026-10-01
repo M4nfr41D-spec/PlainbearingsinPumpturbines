@@ -1,0 +1,39 @@
+name: Package RF-PGV Candidate
+
+on:
+  push:
+    branches:
+      - rfpgv/source-constrained-baseline-v1
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+
+      - name: Add package manifest
+        run: |
+          cat > PACKAGE_MANIFEST.txt <<'EOF'
+          RF-PGV SOURCE-CONSTRAINED CANDIDATE
+          Branch: rfpgv/source-constrained-baseline-v1
+          Runtime source of truth: index.html + runtime/
+          calibration/ = evidence/regression assets, not direct runtime dependencies
+          docs/ = engineering roadmap and surgery documentation
+          EOF
+
+      - name: Upload complete candidate package
+        uses: actions/upload-artifact@v4
+        with:
+          name: RF-PGV-source-constrained-candidate
+          path: |
+            index.html
+            runtime/
+            calibration/
+            docs/
+            PACKAGE_MANIFEST.txt
+          if-no-files-found: error
+          retention-days: 30
