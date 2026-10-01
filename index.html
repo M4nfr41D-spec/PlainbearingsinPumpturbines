@@ -19,7 +19,8 @@
   const injection = [
     '<script src="./runtime/rfpgv_source_data_v1.js"><\\/script>',
     '<script src="./runtime/rfpgv_force_pressure_bridge_v2.js"><\\/script>',
-    '<script src="./runtime/rfpgv_runtime_integration_v1.js"><\\/script>'
+    '<script src="./runtime/rfpgv_runtime_integration_v1.js"><\\/script>',
+    '<script src="./runtime/rfpgv_runtime_closure_v1.js"><\\/script>'
   ].join('\\n');
   try {
     const res = await fetch(base, {cache:'no-store'});
